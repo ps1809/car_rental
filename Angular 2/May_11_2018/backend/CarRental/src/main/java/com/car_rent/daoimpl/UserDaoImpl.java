@@ -41,11 +41,11 @@ public class UserDaoImpl implements UserDao {
 					new Object[] { user.getUsername() }, new UserRowMapper());
 			user.setId(newUser.getId());
 			boolean flag = addUserAddress(user);
-			if(flag){
+			if (flag) {
 				return newUser;
-			}else{
+			} else {
 				deleteUserById(newUser.getId());
-				newUser=null;
+				newUser = null;
 			}
 
 		}
@@ -53,15 +53,15 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	private String deleteUserById(String id) {
-		Map<String,Object> map=new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("userId", id);
-		try{
+		try {
 			map.put("status", "unable to delete User");
-			int i=jdbcTemplate.update(env.getProperty("QUERY.USER.DELETE_USER"),new Object[]{id});
-			if(i>0){
+			int i = jdbcTemplate.update(env.getProperty("QUERY.USER.DELETE_USER"), new Object[] { id });
+			if (i > 0) {
 				map.put("status", "User deleted successfully");
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			map.put("error", e.getMessage());
 			logger.error(e.getMessage());
 		}
@@ -69,17 +69,17 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	private boolean addUserAddress(User user) {
-		int i=-1;
-		try{
+		int i = -1;
+		try {
 			i = jdbcTemplate.update(env.getProperty("QUERY.ADDRESS.ADD_ADDRESS"),
 					new Object[] { user.getAddress().getLine1(), user.getAddress().getLine2(),
-							user.getAddress().getPincode(),user.getAddress().getCity(),
-							user.getAddress().getState(), user.getAddress().getCountry() ,user.getId()});
-		}catch(Exception e){
+							user.getAddress().getPincode(), user.getAddress().getCity(), user.getAddress().getState(),
+							user.getAddress().getCountry(), user.getId() });
+		} catch (Exception e) {
 			logger.error(e.getMessage());
-			i=-1;
+			i = -1;
 		}
-		
+
 		if (i > 0) {
 			return true;
 		}
@@ -103,7 +103,7 @@ public class UserDaoImpl implements UserDao {
 	public User getUserById(String id) {
 		User user = null;
 		try {
-			user = jdbcTemplate.queryForObject(env.getProperty("QUERY.USER.GET_USER_BY_ID"), new Object[]{id},
+			user = jdbcTemplate.queryForObject(env.getProperty("QUERY.USER.GET_USER_BY_ID"), new Object[] { id },
 					new UserRowMapper());
 		} catch (Exception e) {
 			logger.error(e);
@@ -118,7 +118,7 @@ public class UserDaoImpl implements UserDao {
 		try {
 			user = jdbcTemplate.queryForObject(env.getProperty("QUERY.USER.GET_USER_BY_EMAIL"), new Object[] { email },
 					new UserRowMapper());
-			
+
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -129,23 +129,34 @@ public class UserDaoImpl implements UserDao {
 	public List<User> getAllUsers() {
 		List<User> userList = null;
 		try {
-			userList = jdbcTemplate.query(env.getProperty("QUERY.USER.GET_ALL_USERS"),
-					new UserRowMapper());
+			userList = jdbcTemplate.query(env.getProperty("QUERY.USER.GET_ALL_USERS"), new UserRowMapper());
 		} catch (Exception e) {
 			logger.info(e.getMessage());
 		}
 		return userList;
 	}
-	
-	public Address getAddressByUserId(String id){
+
+	public Address getAddressByUserId(String id) {
 		Address address = null;
 		try {
-			address = jdbcTemplate.queryForObject(env.getProperty("QUERY.ADDRESS.GET_ADDRESS"),new Object[]{id},
+			address = jdbcTemplate.queryForObject(env.getProperty("QUERY.ADDRESS.GET_ADDRESS"), new Object[] { id },
 					new BeanPropertyRowMapper<>(Address.class));
 		} catch (Exception e) {
 			logger.info(e.getMessage());
 		}
 		return address;
+	}
+
+	@Override
+	public User doLogin(User user) {
+		User userCheck=null;
+		try{
+			userCheck=jdbcTemplate.queryForObject(env.getProperty("QUERY.USER.USER_LOGIN"), 
+					new Object[]{user.getUsername(),user.getPassword()},new UserRowMapper());
+		}catch(Exception e){
+			logger.error(e.getMessage());
+		}
+		return userCheck;
 	}
 
 }

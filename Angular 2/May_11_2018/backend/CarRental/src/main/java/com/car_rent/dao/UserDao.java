@@ -18,4 +18,6 @@ public interface UserDao {
 	public User getUserByEmail(String email);
 
 	public List<User> getAllUsers();
+
+	public User doLogin(User user);
 }

@@ -19,4 +19,6 @@ public interface UserService {
 
 	public List<User> getAllUsers();
 
+	public User doLogin(User user);
+
 }

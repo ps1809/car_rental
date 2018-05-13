@@ -11,11 +11,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+
+import com.car_rent.interceptor.RestInterceptor;
 
 @Configuration
 @EnableWebMvc
@@ -39,6 +43,25 @@ public class CarRentConfiguration extends WebMvcConfigurerAdapter {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(restInterceptor()).addPathPatterns("/user/*");
+	}
+	
+	 @Override
+	    public void addCorsMappings(CorsRegistry registry) {
+	        registry.addMapping("/**")
+	            .allowedOrigins("*")
+	            .allowedMethods("PUT", "DELETE","POST","GET")
+	            .allowedHeaders("Access-Control-Allow-Origin")
+	            .allowCredentials(false).maxAge(3600);
+	    }
+	
+	@Bean
+	public RestInterceptor restInterceptor() {
+	    return new RestInterceptor();
 	}
 	
 	@Bean

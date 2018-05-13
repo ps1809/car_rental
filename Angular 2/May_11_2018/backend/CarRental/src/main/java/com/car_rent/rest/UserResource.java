@@ -62,13 +62,14 @@ public class UserResource {
 	}
 	
 	@RequestMapping(value="/getAll",method=RequestMethod.GET)
-	public ResponseEntity<List<User>> getAllUsers(){
+	public ResponseEntity<List<User>> getAllUsers() throws InterruptedException{
 		List<User> userList=new ArrayList<>();
 		userList=service.getAllUsers();
+		Thread.sleep(3000);
 		if(userList==null){
 			return new ResponseEntity<List<User>>( HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<List<User>>(userList, HttpStatus.FOUND);
+		return new ResponseEntity<List<User>>(userList, HttpStatus.OK);
 	}
 	
 
